@@ -2,35 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-enum UmbrellaState { open, closed };
+public enum UmbrellaState { open, closed };
 public class Umbrella : MonoBehaviour
 {
     public Mesh umbrellaModelClosed;
     public Mesh umbrellaModelOpen;
     MeshFilter meshFilter;
-    UmbrellaState state;
+    public UmbrellaState State { get; internal set; }
 
     // Start is called before the first frame update
     void Start()
     {
         meshFilter = GetComponentInChildren<MeshFilter>();
         meshFilter.mesh = umbrellaModelClosed;
-        state = UmbrellaState.closed;
+        State = UmbrellaState.closed;
     }
 
     public void Open()
     {
-        if(state == UmbrellaState.closed)
+        if(State == UmbrellaState.closed)
         {
-            state = UmbrellaState.open;
+            State = UmbrellaState.open;
             meshFilter.mesh = umbrellaModelOpen;
         }
     }
     public void Close()
     {
-        if(state == UmbrellaState.open)
+        if(State == UmbrellaState.open)
         {
-            state = UmbrellaState.closed;
+            State = UmbrellaState.closed;
             meshFilter.mesh = umbrellaModelClosed;
         }
     }
