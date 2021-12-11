@@ -287,23 +287,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   umbrellaModelClosed: {fileID: -2432090755550338912, guid: bc81be178c212dc4f858b68dbf8e6601, type: 3}
   umbrellaModelOpen: {fileID: -2432090755550338912, guid: 9f142dd011d820a42ab90d1f2dca1a63, type: 3}
---- !u!1 &617249243 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8826309804475607310, guid: 74d0eab53a6999a42b0a10f72707b261, type: 3}
-  m_PrefabInstance: {fileID: 617249240}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &617249244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 617249243}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a0b15e94f234bc4199a39c0d9df6449, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1219294889
 GameObject:
   m_ObjectHideFlags: 0
