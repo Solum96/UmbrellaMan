@@ -9,10 +9,12 @@ public class Player : MonoBehaviour
     public Umbrella umbrella;
     public Transform cameraReference;
     Rigidbody rb;
-    Animator animator;
+    Collider capsuleCollider;
 
-    PlayerState state;
+    public Animator animator;
+    public PlayerState state;
 
+    float distToGround;
     public float moveSpeed = 6f;
     public float rotationSmoothing = 0.1f;
     public float jumpSpeed = 8f;
@@ -27,40 +29,31 @@ public class Player : MonoBehaviour
         umbrella = GetComponentInChildren<Umbrella>();
         animator = GetComponent<Animator>();
         state = PlayerState.grounded;
+        capsuleCollider = GetComponentInChildren<CapsuleCollider>();
+        distToGround = capsuleCollider.bounds.extents.y;
     }
-
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
+        float mH = Input.GetAxis("Horizontal");
+        float mV = Input.GetAxis("Vertical");
+        Vector3 direction = new Vector3(mH, 0f, mV);
 
-        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
+        bool isRunning = direction.magnitude >= 0.1f;
+        animator.SetBool("isRunning", isRunning);
 
+        float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+        float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, rotationSmoothing);
+        transform.rotation = Quaternion.Euler(0f, angle, 0f);
+        rb.velocity = new Vector3(mH * moveSpeed, rb.velocity.y, mV * moveSpeed);
 
-        if(direction.magnitude >= 0.1f)
+        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
         {
-            animator.SetBool("isRunning", true);
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cameraReference.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, rotationSmoothing);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
-
-            Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            //_controller.Move(moveDir.normalized * moveSpeed * Time.deltaTime);
-            rb.AddForce(moveDir.normalized * moveSpeed * Time.deltaTime, ForceMode.VelocityChange);
+            rb.AddForce(new Vector3(0f, jumpSpeed, 0f), ForceMode.VelocityChange);
+            Debug.Log(rb.velocity.y);
         }
-        else
-        {
-            animator.SetBool("isRunning", false);
-        }
+        state = IsGrounded() ? PlayerState.grounded : PlayerState.airborne;
 
-        if (Input.GetButtonDown("Jump") && state == PlayerState.grounded)
-        {
-            state = PlayerState.airborne;
-            rb.AddForce(transform.up * jumpSpeed, ForceMode.VelocityChange);
-            animator.SetTrigger("Jump");
-        }
-
+        // Umbrella logic
         if (Input.GetKey(KeyCode.Mouse1))
         {
             if(umbrella.State == UmbrellaState.closed) { umbrella.Open(); }
@@ -72,12 +65,16 @@ public class Player : MonoBehaviour
 
         if(state == PlayerState.airborne && umbrella.State == UmbrellaState.open)
         {
-            //rb.drag = umbrellaFloat;
+            rb.drag = umbrellaFloat;
+        }
+        else
+        {
+            rb.drag = 0;
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private bool IsGrounded()
     {
-        if (collision.collider.CompareTag("Ground")) state = PlayerState.grounded;
+        return Physics.Raycast(rb.position, Vector3.down, distToGround + 0.1f);
     }
 }

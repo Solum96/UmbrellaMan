@@ -8,15 +8,16 @@ public class windtunnel : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        Debug.Log(other.tag);
         if (other.CompareTag("Player"))
         {
-            var player = other.GetComponent<Player>();
+            var player = other.GetComponentInParent<Player>();
             if(player.umbrella.State == UmbrellaState.open)
             {
-                var rb = other.GetComponent<CharacterController>();
+                var rb = other.GetComponentInParent<Rigidbody>();
                 Vector3 vel = rb.velocity;
                 vel.y = liftSpeed;
-                rb.SimpleMove(vel);
+                rb.AddForce(vel, ForceMode.VelocityChange);
             }
         }
     }
